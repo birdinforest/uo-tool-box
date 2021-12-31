@@ -3,11 +3,13 @@ using System.IO;
 using System.IO.Pipes;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using CUO_API;
 using DefaultNamespace;
+using UOToolBox;
 
 unsafe
 {
@@ -35,20 +37,9 @@ unsafe
         pattern: "{controller}/{action=Index}/{id?}");
 
     app.MapFallbackToFile("index.html");;
-
-    // var PluginPath = "/Users/forrrest/projects/ClassicUO/bin/Debug/Data/Plugins/ClassLibrary1.exe";
-    // Assembly asm = Assembly.LoadFile(PluginPath);
-    // Type type = asm.GetType("Assistant.Engine");
-    // MethodInfo meth = type?.GetMethod("HookWebAPI", BindingFlags.Public | BindingFlags.Static);
-    //
-    // var dataTransfer = new DataTransfer();
-    //
-    // PluginHeader header = new PluginHeader
-    // {
-    //     OnRecv = Marshal.GetFunctionPointerForDelegate<OnPacketSendRecv>(dataTransfer.OnRecv),
-    // };
-    // void* func = &header;
-    // meth?.Invoke(null, new object[] { (IntPtr)func });
+    
+    Thread pipeThread = new Thread(NamePipeClient.Start);
+    pipeThread.Start();
 
     app.Run();
 }
