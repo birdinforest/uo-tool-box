@@ -49,56 +49,15 @@ namespace UOToolBox
 
                 var streamBuffer = new StreamBuffer(pipeClient);
 
-                var package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 001 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 002 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 003 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 004 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 005 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 006 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                Console.WriteLine($"[UOToolBox][PipeClient] 007 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 008 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 009 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 010 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 011 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 012 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
-
-                package = streamBuffer.Read();
-                Console.WriteLine($"[UOToolBox][PipeClient] 013 Read buffer. Length: {package.Length}. Text:" +
-                                  $"\n{DebugPrintBuffer(package)}");
+                while (true)
+                {
+                    var package = streamBuffer.Read();
+                    if (package.Length > 0)
+                    {
+                        Console.WriteLine($"[UOToolBox][PipeClient] Read buffer. Length: {package.Length}. Text:" +
+                                          $"\n{DebugPrintBuffer(package)}");
+                    }
+                }
             }
             else
             {
@@ -107,7 +66,7 @@ namespace UOToolBox
 
             // pipeClient.Close();
             // Give the client process some time to display results before exiting.
-            Thread.Sleep(2000);
+            // Thread.Sleep(2000);
         }
 
         private static string DebugPrintBuffer(byte[] data)
@@ -203,13 +162,13 @@ namespace UOToolBox
             try
             {
                 var result = ioStream.ReadByte();
-                Console.WriteLine($"[UOToolBox][PipeClient] StreamBuffer.ReadByte 01 result: {result}");
+                // Console.WriteLine($"[UOToolBox][PipeClient] StreamBuffer.ReadByte 01 result: {result}");
                 if (result == -1) return new byte[] { };
 
                 len = result * 256;
 
                 result = ioStream.ReadByte();
-                Console.WriteLine($"[UOToolBox][PipeClient] StreamBuffer.ReadByte 02 result: {result}");
+                // Console.WriteLine($"[UOToolBox][PipeClient] StreamBuffer.ReadByte 02 result: {result}");
                 if (result == -1) return new byte[] { };
 
                 len += result;
@@ -222,7 +181,7 @@ namespace UOToolBox
                 // var step = ioStream.Read(inBuffer, 0, len);
                 var step = ioStream.Read(inBuffer, 0, 65535);
 
-                Console.WriteLine($"[UOToolBox][PipeClient] StreamBuffer. Reading step 01: " + step);
+                Console.WriteLine($"[UOToolBox][PipeClient] StreamBuffer. Reading step: " + step);
 
                 // if (step == len)
                 // {
