@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Authentication.Certificate;
 using UOToolBox;
 using UOToolBox.Hubs;
 
@@ -18,14 +17,10 @@ builder.Services.AddCors(options =>
     {
         policy.AllowAnyHeader()
             .AllowAnyMethod()
-            .WithOrigins("https://localhost:44455")
+            .WithOrigins("http://localhost:44455")
             .AllowCredentials();
     });
 });
-
-builder.Services.AddAuthentication(
-        CertificateAuthenticationDefaults.AuthenticationScheme)
-    .AddCertificate();
 
 // SignalR demo. Add SignalR
 builder.Services.AddSignalR();
@@ -39,15 +34,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 // SignalR demo. Add cors using and routing?
 app.UseCors("ClientPermission");
 
 app.UseStaticFiles();
 app.UseRouting();
-
-app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

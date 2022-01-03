@@ -54,7 +54,7 @@ export class RuntimeJourney extends Component<IProps, IState> {
   static displayName = RuntimeJourney.name;
 
   signalrUrl = 'https://localhost:7200/hubs/chat';
-  apiUrlBase = 'https://localhost:44455';
+  apiUrlBase = 'http://localhost:44455';
 
   // @ts-ignore
   constructor(props) {
@@ -91,7 +91,7 @@ export class RuntimeJourney extends Component<IProps, IState> {
   
   componentWillUnmount() {
     Logger.Log(LoggerModule.SignalR, "RuntimeJourney will unmont.");
-    // this.stopBroadcast();
+    this.stopBroadcast();
   }
 
   handleFiltersChange(value: string[]) {
@@ -278,21 +278,21 @@ export class RuntimeJourney extends Component<IProps, IState> {
             user: 'Derek',
             message: 'This is broadcast message from one client. Send by `IHubContext`',
           };
-          // await fetch(`${this.apiUrlBase}/journey/loop-start`, {
-          //   method: 'POST',
-          //   body: JSON.stringify(broadcastMessage),
-          //   headers: {
-          //     'Content-Type': 'application/json'
-          //   }
-          // });
+          await fetch(`${this.apiUrlBase}/journey/loop-start`, {
+            method: 'POST',
+            body: JSON.stringify(broadcastMessage),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
 
-          // Send message to server via signalR
-          try {
-            await this.state.connection?.send('SendMessage', broadcastMessage);
-          }
-          catch(e) {
-            console.log(e);
-          }
+          // // Send message to server via signalR
+          // try {
+          //   await this.state.connection?.send('SendMessage', broadcastMessage);
+          // }
+          // catch(e) {
+          //   console.log(e);
+          // }
       }
       catch(e) {
         console.log('Sending message failed.', e);
