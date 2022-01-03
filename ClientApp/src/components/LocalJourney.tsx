@@ -43,8 +43,8 @@ interface IState {
   data?: [], loading: boolean, selected: string[], players?: string[], npcs?: NPC[]
 }
 
-export class FetchData extends Component<IProps, IState> {
-  static displayName = FetchData.name;
+export class LocalJourney extends Component<IProps, IState> {
+  static displayName = LocalJourney.name;
 
   // @ts-ignore
   constructor(props) {
@@ -143,7 +143,7 @@ export class FetchData extends Component<IProps, IState> {
 
     return (
       <div>
-        <h1 id="journey">Journey</h1>
+        <h1 id="journey">UO Journey</h1>
 
         {/*Players*/}
         <Select defaultValue={this.state.players && this.state.players[0]} style={{ width: 220 }} onChange={this.handlePlayerSelectionChange.bind(this)}>
