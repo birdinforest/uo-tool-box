@@ -44,10 +44,11 @@ interface IProps {
 interface IState {
   loading: boolean,
   data?: [],
+  journey?: string[],
   connection?: HubConnection
   selected: string[], 
   players?: string[], 
-  npcs?: NPC[]
+  npcs?: NPC[],
 }
 
 export class RuntimeJourney extends Component<IProps, IState> {
@@ -81,6 +82,9 @@ export class RuntimeJourney extends Component<IProps, IState> {
           // Register the method which is called by Hub in server: `Clients.All.ReceiveMessage(message)`.
           connection.on('ReceiveMessage', message => {
             Logger.Log(LoggerModule.SignalR, `Receive message.\n${message.user}:${message.message}.`);
+            let journey = this.state.journey || [];
+            journey.push(message.message);
+            this.setState({journey})
           });
 
           this.startBroadcast();
@@ -141,16 +145,20 @@ export class RuntimeJourney extends Component<IProps, IState> {
 
   renderJourney(journeys: any[]) {
     return (
-      journeys.map((j, jIndex) =>
-        <div key={`journey_${jIndex}`}>
-          {(j as []).map((entry: Entry, eIndex) =>
-            <div key={`entry_${jIndex}_${eIndex}`}> {`${entry.time} ${entry.char}: ${entry.content}`} </div>
-          )}
-        </div>))
+      // journeys.map((j, jIndex) =>
+      //   <div key={`journey_${jIndex}`}>
+      //     {(j as []).map((entry: Entry, eIndex) =>
+      //       <div key={`entry_${jIndex}_${eIndex}`}> {`${entry.time} ${entry.char}: ${entry.content}`} </div>
+      //     )}
+      //   </div>))
+        this.state.journey?.map((entry, index) => {
+          return <div key={`entry_${index}`}> {`${entry}`} </div>
+        })
+    )
   }
 
   render() {
-    const journeys = this.state.data;
+    const journeys = this.state.journey;
 
     if(!journeys) {
       return <div></div>;
@@ -159,22 +167,19 @@ export class RuntimeJourney extends Component<IProps, IState> {
     let selected = this.state.selected;
     const filteredJourneys: Entry[][] = [];
 
-    journeys.forEach((journey: Entry[]) => {
-      filteredJourneys.push(
-        journey.filter((entry: Entry) => {
-          return selected.indexOf(entry.char) === -1
-            && selected.indexOf(EntryType[entry.type]) === -1
-            && entry.content != entry.char;
-        })
-      );
-    })
+    // journeys.forEach((journey: Entry[]) => {
+    //   filteredJourneys.push(
+    //     journey.filter((entry: Entry) => {
+    //       return selected.indexOf(entry.char) === -1
+    //         && selected.indexOf(EntryType[entry.type]) === -1
+    //         && entry.content != entry.char;
+    //     })
+    //   );
+    // })
     console.log('journeys', filteredJourneys)
 
     // @ts-ignore
-    let contents = this.state.loading
-      ? <p><em>Loading...</em></p>
-      // @ts-ignore
-      : this.renderJourney(filteredJourneys);
+    let contents = this.renderJourney(filteredJourneys);
 
     // console.log(this.state)
 
@@ -280,7 +285,7 @@ export class RuntimeJourney extends Component<IProps, IState> {
           };
           await fetch(`${this.apiUrlBase}/journey/loop-start`, {
             method: 'POST',
-            body: JSON.stringify(broadcastMessage),
+            body: '',
             headers: {
               'Content-Type': 'application/json'
             }

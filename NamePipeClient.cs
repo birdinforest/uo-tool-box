@@ -100,6 +100,10 @@ namespace UOToolBox
     {
         private static int numClients = 4;
         
+        public delegate void OnPackageReceived(string text);
+
+        public static OnPackageReceived OnRecv;
+        
         // ID of transmitted data
         private static int _id = -1;
 
@@ -110,8 +114,12 @@ namespace UOToolBox
 
             if (PackageParser.IsJourney(ref instance.Buffer))
             {
-                Log($"Read buffer. Length: {instance.Buffer.Length}. Text:" +
-                    $"\n{PackageParser.ParseJourney(ref instance.Buffer)}");
+                var text = PackageParser.ParseJourney(ref instance.Buffer);
+                Log($"Read buffer. Length: {instance.Buffer.Length}. Text:\n{text}");
+                if (OnRecv != null)
+                {
+                    OnRecv.Invoke(text);
+                }
             }
         });
         

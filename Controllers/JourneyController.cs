@@ -28,9 +28,11 @@ namespace UOToolBox.Controllers
         {
             _logger = logger;
             _chatHub = chatHub;
+            NamePipeClient.OnRecv = PushToClient;
         }
 
         /// <summary>
+        /// Get journey files at local directory.
         /// API: [url]/journey
         /// </summary>
         /// <returns></returns>
@@ -72,52 +74,69 @@ namespace UOToolBox.Controllers
             await _chatHub.Clients.All.ReceiveMessage(message);
         }
 
+        /// <summary>
+        /// Start to push runtime journey to client.
+        /// </summary>
         [HttpPost("loop-start")]
         public async Task StartBroadcastLoop()
         {
-            if (doBroadcast)
-                return;
-            
-            // run some logic...
-            Console.WriteLine($"BroadcastController starts broadcast loop.");
+            // if (doBroadcast)
+            //     return;
+            //
+            // // run some logic...
+            //
+            // doBroadcast = true;
+            //
+            // // Create a timer and set a two second interval.
+            // aTimer = new System.Timers.Timer();
+            // aTimer.Interval = 2000;
+            //
+            // // Hook up the Elapsed event for the timer
+            // var onTimedEvent = new System.Timers.ElapsedEventHandler(
+            //     async (Object source, System.Timers.ElapsedEventArgs e) =>
+            //     {
+            //         if (!doBroadcast)
+            //             return;
+            //
+            //         var chatMessage = new ChatMessage
+            //         {
+            //             User = "Server",
+            //             Message = $"This is broadcast at {e.SignalTime}."
+            //         };
+            //
+            //         Console.WriteLine(
+            //             $"BroadcastController send message. User:{chatMessage.User}, Message:{chatMessage.Message}");
+            //         await _chatHub.Clients.All.ReceiveMessage(chatMessage);
+            //     });
+            //
+            // aTimer.Elapsed += onTimedEvent;
+            //
+            // // Have the timer fire repeated events (true is the default)
+            // aTimer.AutoReset = true;
+            //
+            // // Start the timer
+            // aTimer.Enabled = true;
 
-            doBroadcast = true;
+            // NamePipeClient.OnRecv += PushToClient;
+        }
 
-            // Create a timer and set a two second interval.
-            aTimer = new System.Timers.Timer();
-            aTimer.Interval = 2000;
+        async void PushToClient(string text)
+        {
+            var message = new ChatMessage
+            {
+                User = "",
+                Message = text,
+            };
 
-            // Hook up the Elapsed event for the timer
-            var onTimedEvent = new System.Timers.ElapsedEventHandler(
-                async (Object source, System.Timers.ElapsedEventArgs e) =>
-                {
-                    if (!doBroadcast)
-                        return;
-
-                    var chatMessage = new ChatMessage
-                    {
-                        User = "Server",
-                        Message = $"This is broadcast at {e.SignalTime}."
-                    };
-
-                    Console.WriteLine(
-                        $"BroadcastController send message. User:{chatMessage.User}, Message:{chatMessage.Message}");
-                    await _chatHub.Clients.All.ReceiveMessage(chatMessage);
-                });
-
-            aTimer.Elapsed += onTimedEvent;
-
-            // Have the timer fire repeated events (true is the default)
-            aTimer.AutoReset = true;
-
-            // Start the timer
-            aTimer.Enabled = true;
+            Logger.Log(Logger.Module.SignalR, $"{message.User} | {message.Message}");
+                
+            await _chatHub.Clients.All.ReceiveMessage(message);
         }
 
         [HttpPost("loop-stop")]
         public async Task StopBroadcastLoop()
         {
-            doBroadcast = false;
+            // NamePipeClient.OnRecv -= PushToClient;
         }
 
         private string ReadFile(string path)
